@@ -1,7 +1,8 @@
 const request = require("request");
 const cheerio = require("cheerio");
-let fs = require('fs');
-
+const fs = require('fs');
+const xlsx = require('xlsx');
+const path = require('path');
 console.log("Before");
 
 function processSingleMatch(url) {
@@ -61,12 +62,55 @@ function dataExtractor(html){
             //console.log(playerNames);
             let data = `PlayerName =  ${name}  | runs= ${runs} | balls=${balls} | fours =${fours}   | sixes=${sixes}   | sr=${sr}  `;
             console.log(data)
-      
+            processPlayer(teamName, name, runs, balls, fours, sixes, sr, oppteamName, venue, date, res);
         }
      }
      console.log("-----------------------------------------")
     }
    
+}
+
+function processPlayer(teamName, name, runs, balls, fours, sixes, sr, oppteamName, venue, date, res){
+  let teamPath = path.join(__dirname,"ipl",teamName);
+  dirCreator(teamPath);
+  let filePath = path.join(teamPath,name+".xlsx");
+  let content = excelReader(filePath,name);
+  let playerObj = {
+    teamName,
+    name,
+    runs,balls,fours,sixes,
+    sr,
+    oppteamName,
+    venue,date,
+    res
+  }
+  content.push(playerObj);
+  excelWriter(filePath,content,name);
+}
+
+function dirCreator(filePath){
+  if(fs.existsSync(filePath)==false){
+  fs.mkdirSync(filePath);
+  }
+}
+
+function excelWriter(filePath, json, sheetName) {
+
+  let newWB = xlsx.utils.book_new();
+  let newWS = xlsx.utils.json_to_sheet(json);
+  xlsx.utils.book_append_sheet(newWB, newWS, sheetName);
+  xlsx.writeFile(newWB, filePath);
+}
+
+function excelReader(filePath, sheetName) {
+  if (fs.existsSync(filePath) == false) {
+      return [];
+  }
+  let wb = xlsx.readFile(filePath);
+  let excelData = wb.Sheets[sheetName];
+  let ans = xlsx.utils.sheet_to_json(excelData);
+  return ans;
+
 }
 
 module.exports ={

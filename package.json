@@ -5,9 +5,9 @@
   "main": "main.js",
   "dependencies": {
     "cheerio": "^1.0.0-rc.10",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "xlsx": "^0.17.1"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

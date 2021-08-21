@@ -1,8 +1,12 @@
 const request = require("request");
 const cheerio = require("cheerio");
 const scoreObj = require("./score");
-
+const fs = require("fs");
+const path = require("path");
 const url = "https://www.espncricinfo.com/series/ipl-2020-21-1210595";
+
+const iplPath = path.join(__dirname,"ipl");
+dirCreator(iplPath);
 request(url, cb);
 
 function cb(error, respose, html) {
@@ -45,5 +49,11 @@ function getAllScoreCard(html) {
    }
   
    
+}
+
+function dirCreator(filePath){
+  if(fs.existsSync(filePath)==false){
+  fs.mkdirSync(filePath);
+  }
 }
 
